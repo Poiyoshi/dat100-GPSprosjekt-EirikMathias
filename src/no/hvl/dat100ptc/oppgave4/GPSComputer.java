@@ -31,6 +31,8 @@ public class GPSComputer {
 
 		double distance = 0;
 
+		
+		
 		throw new UnsupportedOperationException(TODO.method());
 
 		// TODO
