@@ -31,28 +31,32 @@ public class GPSComputer {
 
 		double distance = 0;
 
+		for(int i = 0 ; i < gpspoints.length-1;i++) {
+			distance += GPSUtils.distance(gpspoints[i], gpspoints[i+1]);
 		
+		}
+	System.out.print(distance);
+	return distance;
 		
-		throw new UnsupportedOperationException(TODO.method());
-
-		// TODO
-
 	}
 
 	public double totalElevation() {
-
-		double elevation = 0;
-
-		throw new UnsupportedOperationException(TODO.method());
-		
-		// TODO 
+ 
+		double[]tabellElevation = new double[gpspoints.length];
+		int i = 0;
+		for(GPSPoint e : gpspoints) {
+			
+			tabellElevation[i]=e.getElevation();
+			i++;
+		}
+		double hPunkt = GPSUtils.findMax(tabellElevation);
+	return hPunkt;
 		
 	}
 
 	public int totalTime() {
-
-		// TODO
-		throw new UnsupportedOperationException(TODO.method());
+	
+		return gpspoints[gpspoints.length - 1].getTime() - gpspoints[0].getTime();
 		
 	}
 		
@@ -61,26 +65,37 @@ public class GPSComputer {
 
 		double[] speeds = new double[gpspoints.length-1];
 		
-		// TODO
-		throw new UnsupportedOperationException(TODO.method());
-		
+		for(int i = 0 ; i < gpspoints.length-1 ; i++) {
+			speeds[i] = GPSUtils.speed(gpspoints[i], gpspoints[i+1]);
+		}
+		return speeds;
 	}
 	
 	public double maxSpeed() {
 		
 		double maxspeed = 0;
 		
-		// TODO 
-		throw new UnsupportedOperationException(TODO.method());
-	
+	double[] speeds = new double[gpspoints.length-1];
+		
+		for(int i = 0 ; i < gpspoints.length-1 ; i++) {
+			speeds[i] = GPSUtils.speed(gpspoints[i], gpspoints[i+1]);
+		}
+		maxspeed = GPSUtils.findMax(speeds);
+		
+		return maxspeed;
 	}
+	
 
 	public double averageSpeed() {
-
 		double average = 0;
 		
-		// TODO
-		throw new UnsupportedOperationException(TODO.method());
+		
+		double D = totalDistance();
+		double T = totalTime();
+		
+		average = D/T;
+		
+		return average;
 		
 	}
 
@@ -91,31 +106,68 @@ public class GPSComputer {
 	public double kcal(double weight, int secs, double speed) {
 
 		double kcal;
-
-		double met = 0;		
+		double t;
+		double met = 0;	
 		double speedmph = speed * MS;
-
-		// TODO 
-		throw new UnsupportedOperationException(TODO.method());
 		
+		t = secs/3600.0;
+		
+
+		    if (speedmph < 10) {
+		        met = 4.0;
+		    } else if (speedmph < 12) {
+		        met = 6.0;
+		    } else if (speedmph < 14) {
+		        met = 8.0;
+		    } else if (speedmph < 16) {
+		        met = 10.0;
+		    } else if (speedmph < 20) {
+		        met = 12.0;
+		    } else {
+		        met = 16.0;
+		    }
+		
+		kcal = met * weight * t;
+		System.out.println(kcal);
+		return kcal;
+
 	}
 
 	public double totalKcal(double weight) {
-
-		double totalkcal = 0;
-
-		// TODO 
-		throw new UnsupportedOperationException(TODO.method());
 		
+		  double totalKcal = 0;
+
+		    for (int i = 0; i < gpspoints.length - 1; i++) {
+		        int time = gpspoints[i + 1].getTime() - gpspoints[i].getTime(); 
+		        double speed = GPSUtils.speed(gpspoints[i], gpspoints[i + 1]); 
+
+		        totalKcal += kcal(weight, time, speed);
+		    }
+		    System.out.println("------>" + totalKcal);
+		    return totalKcal;
+	
 	}
 	
 	private static double WEIGHT = 80.0;
 	
 	public void displayStatistics() {
+	
 
-		// TODO 
-		throw new UnsupportedOperationException(TODO.method());
-		
+	String tTime = String.format("%-15s:%11s", "Total time", GPSUtils.formatTime(totalTime()) );
+	String tDistance = String.format("%-15s:%11d %2s", "Total time", totalDistance(), "km");
+	String tElevation = String.format("%-15s:%11d %1s", "Total time", totalElevation(), "m" );
+	String mSpeed = String.format("%-15s:%11d %4s", "Total time", maxSpeed(), "km/t" );
+	String aSpeed = String.format("%-15s:%11d %4s", "Total time", averageSpeed(), "km/t");
+	String energi = String.format("%-15s:%11d %4s", "Total time", totalKcal(WEIGHT), "kcal");
+	
+	System.out.println("==============================================");
+	System.out.println(tTime);
+	System.out.println(tDistance);
+	System.out.println(tElevation);
+	System.out.println(mSpeed);
+	System.out.println(aSpeed);
+	System.out.println(energi);
+	System.out.println("==============================================");
 	}
 
 }
